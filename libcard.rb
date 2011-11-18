@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'sinatra'
-require 'lib/librarysystems'
+require './lib/librarysystems'
 #require 'lib/account'
 
 #warks = Vubis.new('warks','https://library.warwickshire.gov.uk/vs/Pa.csp?OpacLanguage=eng&Profile=Default')
