@@ -1,2 +1,2 @@
-require 'libcard'
+require './libcard'
 run Sinatra::Application
