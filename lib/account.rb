@@ -1,8 +1,3 @@
-require 'rubygems'
-require 'mechanize'
-require 'nokogiri'
-require 'date'
-require 'pony'
 require './lib/loanitem'
 require './lib/loanlist'
 

@@ -1,2 +1,6 @@
 source 'http://rubygems.org'
 gem 'sinatra'
+gem 'mechanize'
+gem 'nokogiri'
+gem 'date'
+gem 'pony'
