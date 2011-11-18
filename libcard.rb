@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'sinatra'
-#require 'lib/librarysystems'
-#require 'lib/account'
+require 'lib/librarysystems'
+require 'lib/account'
 
 #warks = Vubis.new('warks','https://library.warwickshire.gov.uk/vs/Pa.csp?OpacLanguage=eng&Profile=Default')
 #damyanti = Account.new('4336855X','18011976','patel.damyanti@gmail.com',warks)
