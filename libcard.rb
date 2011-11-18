@@ -1,16 +1,16 @@
-require 'rubygems'
+require 'rubygems' 
 require 'sinatra'
-#require 'lib/librarysystems'
-#require 'lib/account'
 
-#warks = Vubis.new('warks','https://library.warwickshire.gov.uk/vs/Pa.csp?OpacLanguage=eng&Profile=Default')
-#damyanti = Account.new('4336855X','18011976','patel.damyanti@gmail.com',warks)
-#owen = Account.new('4356489X','19041972','owen.patel@gmail.com',warks)
+get '/' do 
+    html = '<p>Welcome! Leave your email address for more info!</p>' 
+    html += '<form method="post" action="/submit">' 
+    html += '<input type="text" name="email" /><input type="submit" /></form>' 
+    return html
+end
 
-get '/go-go-owen-renew' do
-#    owen.getCurrentloans
-#    owen.renewLoans
-#    owen.getCurrentloans
-#    "#{owen.currentloans.to_s}"
-    "done"
+post '/submit' do 
+    html = '<p>Thank you for your submission!</p>' 
+    html += '<p>We will email ' + params['email'] 
+    html += ' when we are ready to launch!</p>' 
+    return html
 end
