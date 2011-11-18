@@ -3,8 +3,8 @@ require 'mechanize'
 require 'nokogiri'
 require 'date'
 require 'pony'
-require 'libcard/loanitem'
-require 'libcard/loanlist'
+require 'lib/loanitem'
+require 'lib/loanlist'
 
 class Account
     def initialize(barcode, pin, email, libsys)
