@@ -8,9 +8,9 @@ damyanti = Account.new('4336855X','18011976','patel.damyanti@gmail.com',warks)
 owen = Account.new('4356489X','19041972','owen.patel@gmail.com',warks)
 
 owen.getCurrentloans
-puts owen.currentloans.to_s
 owen.renewLoans
+owen.getCurrentloans
 
 if owen.currentloans.length > 0
-#    loans.send_email("owen.patel@gmail.com", "owenfrom", owen.email,"owento")
+    loans.send_email("owen.patel@gmail.com", "owenfrom", owen.email,"owento")
 end
