@@ -8,8 +8,7 @@ warks = Vubis.new('warks','https://library.warwickshire.gov.uk/vs/Pa.csp?OpacLan
 owen = Account.new('4356489X','19041972','owen.patel@gmail.com',warks)
 
 get '/go-go-owen-renew' do
+    owen.renewLoans
     owen.getCurrentloans
-#    owen.renewLoans
-#    owen.getCurrentloans
     "#{owen.currentloans.to_s}"
 end
