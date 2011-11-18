@@ -100,7 +100,7 @@ class Account
             i = 0
             @currentloans.loans.each do |loan|
                 days = loan.duedate - DateTime.now
-                puts "#{loan.id}  #{days.to_i}"
+                # puts "#{loan.id}  #{days.to_i}"
                 if (loan.renewals.to_i < 3 && days.to_i < 1)
                     renew_uri = renew_uri + loan.id.to_s + "^"
                     i += 1
@@ -110,10 +110,10 @@ class Account
 #                    renew_uri = renew_uri + loan.id.to_s + "^"
 #                end
             end
-            puts renew_uri
+            # puts renew_uri
             if (i > 0)
                 a.get(renew_uri) do |renewal_page|
-                    puts renewal_page.parser.xpath("/").to_s
+                    # puts renewal_page.parser.xpath("/").to_s
                 end
             end
         end
