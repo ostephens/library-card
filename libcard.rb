@@ -4,11 +4,17 @@ require './lib/librarysystems'
 require './lib/account'
 
 warks = Vubis.new('warks','https://library.warwickshire.gov.uk/vs/')
-#damyanti = Account.new('4336855X','18011976','patel.damyanti@gmail.com',warks)
+damyanti = Account.new('4336855X','18011976','patel.damyanti@gmail.com',warks)
 owen = Account.new('4356489X','19041972','owen.patel@gmail.com',warks)
 
 get '/go-go-owen-renew' do
-    owen.renewLoans
     owen.getCurrentloans
+    owen.renewLoans
     "#{owen.currentloans.to_s}"
 end
+
+#get '/go-go-damyanti-renew' do
+#    damayanti.getCurrentloans
+#    damyanti.renewLoans
+#    "#{damyanti.currentloans.to_s}"
+#end
