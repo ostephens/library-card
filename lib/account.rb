@@ -42,6 +42,9 @@ class Account
             if itemrow.xpath('td[1]').attribute("class").to_s == 'listhead'
             else
                 id = itemrow.xpath('td[1]/input/@value')
+                if (id.length == 0) # if no id in checkbox (e.g. when item already been renewed today)
+                     id = itemrow.xpath('td[3]').inner_text #take from barcode cell instead
+                end
                 title = itemrow.xpath('td[2]').inner_text.chop.strip
                 loan_date = itemrow.xpath('td[5]').inner_text
                 renewals = itemrow.xpath('td[7]').inner_text
