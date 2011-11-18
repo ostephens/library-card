@@ -45,6 +45,9 @@ class Account
                 if itemrow.xpath('td[1]').attribute("class").to_s == 'listhead'
                 else
                     id = itemrow.xpath('td[1]/input/@value')
+                     if (id.length == 0) # if no id in checkbox (e.g. when item already been renewed today)
+                         id = itemrow.xpath('td[3]').inner_text #take from barcode cell instead
+                     end
                     title = itemrow.xpath('td[2]').inner_text.chop.strip
                     loan_date = itemrow.xpath('td[5]').inner_text
                     renewals = itemrow.xpath('td[7]').inner_text
@@ -113,14 +116,6 @@ class Account
                     puts renewal_page.parser.xpath("/").to_s
                 end
             end
-            # this is no good, as Mechanize can't handle javascript
-            # loanhistory_frame = loanhistory_frame.link_with(:text => /Renew selection/).click
-            # instead we can build the renew URL as a string reasonably simply as we have the IDs
-            # need to grab the 'renewurl' parameter from javascript (or build it from values - all except BorrowerId in form, BorrowerId would need extracting from string - e.g. in the frame src value)
-            # then add 'ModParameter' equal to "CurrentLoansStep2" and add 'Objects' parameter equal to
-            # concatenation of object IDs separated by a '^' (also whole string preceded and followed by '^')
-            # then follow that URL
-            # OpacLanguage=eng&BorrowerId=WARKS.43250634&Profile=Default&EncodedRequest=*9Fn*B1*D7*2A*EA*A1P*3C*2C*87*FD*28*17*83R&Module=LOA&ModParameter=
         end
     end
     
