@@ -7,14 +7,14 @@ class Loanitem
         @renewals = renewals
     end
     
-    attr_reader :id, :title, :loandate, :duedate, :renewals
+    attr_reader :id, :title, :loandate, :duedate, :renewals, :renewable
 
     def to_s
-        "ID: #{@id} Title: #{@title}  #{@authordesc}     Loan date: #{@loandate}   Due date: #{@duedate}   Renewals: #{@renewals}\n"
+        "ID: #{@id} Title: #{@title}  #{@authordesc}     Loan date: #{@loandate}   Due date: #{@duedate}   Renewals: #{@renewals}   Renewable? :#{renewable}\n"
     end
     
     def to_html
-        "ID: #{@id} Title: #{@title}  #{@authordesc}     Loan date: #{@loandate}   Due date: #{@duedate}   Renewals: #{@renewals}<br />"
+        "ID: #{@id} Title: #{@title}  #{@authordesc}     Loan date: #{@loandate}   Due date: #{@duedate}   Renewals: #{@renewals}   Renewable? :#{renewable}<br />"
     end
     
     def printLoanitem
@@ -23,5 +23,7 @@ class Loanitem
         puts @title
         puts @loandate
         puts @duedate
+        puts @renewals
+        puts @renewable
     end
 end

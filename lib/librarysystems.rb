@@ -50,16 +50,17 @@ class Vubis < Librarysystem
                 id = itemrow.xpath('td[1]/input/@value')
                 if (id.length == 0)
                     id = itemrow.xpath('td[3]').inner_text
+                    renewable = "No"
                 end
                 title = itemrow.xpath('td[2]').inner_text.chop.strip
                 loan_date = itemrow.xpath('td[5]').inner_text
                 renewals = itemrow.xpath('td[7]').inner_text
-                if renewals === "2"
-                    renewals = "2 - Last time you can renew online, take it back!"
+                if renewals > "2"
+                    renewable = "No"
                 end
                 due_s = itemrow.xpath('td[6]').inner_text
                 due = Date.strptime(due_s, "%d/%m/%Y")
-                l.addLoan(Loanitem.new(id, title,loan_date,due,renewals))
+                l.addLoan(Loanitem.new(id, title,loan_date,due,renewals,renewable))
             end
         end
         return l
@@ -93,7 +94,7 @@ class Vubis < Librarysystem
         loans.loans.each do |loan|
             days = loan.duedate - DateTime.now
             puts "#{loan.id}  #{days.to_i}"
-            if (loan.renewals.to_i < 3 && days.to_i < 1)
+            if (loan.renewable.to_s != "No" && days.to_i < 1)
                 renew_uri = renew_uri + loan.id.to_s + "^"
                 i += 1
             end
