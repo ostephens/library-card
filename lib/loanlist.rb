@@ -14,6 +14,12 @@ class Loanlist
         end
     end
     
+    def to_html
+        @loans.each do |litem|
+            litem.to_html
+        end
+    end
+    
     def length
         @loans.length
     end
