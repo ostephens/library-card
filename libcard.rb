@@ -10,7 +10,7 @@ owen = Account.new('4356489X','19041972','owen.patel@gmail.com',warks)
 get '/go-go-owen-renew' do
     owen.getLoans
     owen.renewLoans
-    "#{owen.currentloans.to_s}"
+    "#{owen.currentloans.to_html}"
 end
 
 #get '/go-go-damyanti-renew' do
