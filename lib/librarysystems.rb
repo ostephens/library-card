@@ -97,10 +97,6 @@ class Vubis < Librarysystem
                 renew_uri = renew_uri + loan.id.to_s + "^"
                 i += 1
             end
-#            if (loan.id.to_s == "0123593898")
-#                renew_uri = renew_uri + loan.id.to_s + "^"
-#                i += 1
-#            end
         end
         puts renew_uri
         if (i>0)
