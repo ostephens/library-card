@@ -1,14 +1,119 @@
+require 'rubygems'
+require 'mechanize'
+require 'nokogiri'
+require 'pony'
+require './lib/loanitem'
+require './lib/loanlist'
+
 class Librarysystem
-    #superclass which describes a library system - just a name and url, as yet no methods
-    def initialize(name, url)
-    	@name = name
+    #superclass which describes a library system - just a url, as yet no methods
+    def initialize(url)
 		@url = url
 	end	
-    attr_reader :name, :url
+    attr_reader :url
+    attr_accessor :barcode, :pin
 end
 
 class Vubis < Librarysystem
-    def initialize(name, url)
-        super(name,url)
+    def initialize(url)
+        super(url)
+        @browser = Mechanize.new { |agent|
+            agent.user_agent_alias = 'Mac Safari'
+        }
+    end
+    attr_accessor :browser, :page
+    
+    def logIn(url,barcode,pin)
+        # perhaps should track session - start time
+        # then could avoid logging in again if not expired (Warks time seems to be <=10min)
+        @page = @browser.get(url)
+        @page = @browser.click(@page.frame_with(:name => 'Body'))
+        @page = @page.form_with(:name => 'Login') do |form|
+            form.CardId = barcode
+            form.Pin = pin
+        end.submit
+    end
+
+    def gotoCurrentloans
+        @page = @browser.click(@page.frame_with(:name => 'Body'))
+        @page = @browser.click(@page.link_with(:text => /My loans and renewals/))
+        borrower_id = @page.parser.xpath("//frame[@name='Body']").attribute("src").to_s.sub(/(.*BorrowerId=)([^&]*)(.*$)/,'\2')
+        @page = @browser.click(@page.frame_with(:name => 'Body'))
+        return borrower_id
+    end
+
+    def scrapeCurrentloans(table)
+        l = Loanlist.new()
+        table.xpath('table[3]/tr').each do |itemrow|
+            if itemrow.xpath('td[1]').attribute("class").to_s == 'listhead'
+            else
+                id = itemrow.xpath('td[1]/input/@value')
+                if (id.length == 0)
+                    id = itemrow.xpath('td[3]').inner_text
+                end
+                title = itemrow.xpath('td[2]').inner_text.chop.strip
+                loan_date = itemrow.xpath('td[5]').inner_text
+                renewals = itemrow.xpath('td[7]').inner_text
+                if renewals === "2"
+                    renewals = "2 - Last time you can renew online, take it back!"
+                end
+                due_s = itemrow.xpath('td[6]').inner_text
+                due = Date.strptime(due_s, "%d/%m/%Y")
+                l.addLoan(Loanitem.new(id, title,loan_date,due,renewals))
+            end
+        end
+        return l
+    end
+
+    def getCurrentloans(barcode, pin)
+        #this is where we retrieve current loans and use it to create an array of loanitem objects
+        self.logIn(@url + "Pa.csp?OpacLanguage=eng&Profile=Default",barcode,pin)
+        self.gotoCurrentloans
+        itemtable = @page.parser.xpath('//form/table[3]')
+        self.scrapeCurrentloans(itemtable)
+    end
+
+    def renewLoans(barcode,pin,loans)
+        # check we have some loans
+
+        if (loans.length == 0)
+            return false
+        end
+
+        # login and renew loans in @currentloans
+        self.logIn(@url + "Pa.csp?OpacLanguage=eng&Profile=Default",barcode,pin)
+        borrower_id = self.gotoCurrentloans          
+        opac_lang = @page.parser.xpath("//form/input[@name='OpacLanguage']").attribute("value").to_s
+        profile = @page.parser.xpath("//form/input[@name='Profile']").attribute("value").to_s
+        request = @page.parser.xpath("//form/input[@name='EncodedRequest']").attribute("value").to_s
+        mod = @page.parser.xpath("//form/input[@name='Module']").attribute("value").to_s
+
+        renew_uri = @url + "PBorrower.csp?OpacLanguage=#{opac_lang}&Profile=#{profile}&EncodedRequest=#{request}&BorrowerId=#{borrower_id}&Module=#{mod}&ModParameter=CurrentLoansStep3&Objects=^"
+        i = 0
+        loans.loans.each do |loan|
+            days = loan.duedate - DateTime.now
+            puts "#{loan.id}  #{days.to_i}"
+            if (loan.renewals.to_i < 3 && days.to_i < 1)
+                renew_uri = renew_uri + loan.id.to_s + "^"
+                i += 1
+            end
+#            if (loan.id.to_s == "0123593898")
+#                renew_uri = renew_uri + loan.id.to_s + "^"
+#                i += 1
+#            end
+        end
+        puts renew_uri
+        if (i>0)
+            @page = @browser.get(renew_uri)
+        end
+        itemtable = @page.parser.xpath('//form/table[3]')
+        return self.scrapeCurrentloans(itemtable)        
+    end
+end
+
+class Warks < Vubis
+    def initialize()
+        super(browser)
+        @url = "https://library.warwickshire.gov.uk/vs/"
     end
 end
