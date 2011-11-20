@@ -1,0 +1,1 @@
+Add 'renewable' flag so we know if an item can be renewed or not (e.g. can't renew if already renewed today, or if renewed >=3 times already)
