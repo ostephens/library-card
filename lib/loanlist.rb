@@ -16,7 +16,7 @@ class Loanlist
     
     def to_html
         @loans.each do |litem|
-            litem.to_html + <br />
+            litem.to_html + "<br />"
         end
     end
     
