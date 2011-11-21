@@ -28,7 +28,7 @@ class Account
     end
     
     def printLoans
-        @currentloans.to_s
+        @currentloans.printLoanlist
     end
     
 end

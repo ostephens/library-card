@@ -14,6 +14,10 @@ class Loanitem
     end
     
     def printLoanitem
+        printed = "ID: #{@id} Title: #{@title}  #{@authordesc}     Loan date: #{@loandate}   Due date: #{@duedate}   Renewals: #{@renewals}   Renewable? :#{renewable}<br />"
+    end
+    
+    def printplainLoanitem
         printed = "-----------------------------  Item details  -----------------------------"
         printed += "#{@id}"
         printed += "#{@title}"

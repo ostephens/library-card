@@ -23,8 +23,10 @@ class Loanlist
     end
     
     def printLoanlist
+        list = ""
         @loans.each do |litem|
-            litem.printLoanitem
+            list += litem.printLoanitem.to_s
         end
+        return list
     end
 end
