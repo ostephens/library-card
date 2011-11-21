@@ -4,15 +4,21 @@ require './lib/librarysystems'
 require './lib/account'
 
 helpers do
-    def loans
+    def loans(name, bc, pin)
         warks = Warks.new()
-        damyanti = Account.new('4336855X','18011976','patel.damyanti@gmail.com',warks)
-        owen = Account.new('4356489X','19041972','owen.patel@gmail.com',warks)
-        owen.getLoans
-        owen.renewLoans
-        output = owen.printLoans
+        ac = Account.new(bc,pin,name,warks)
+        ac.getLoans
+        output = ac.printLoans
         return output
-  end
+    end
+    def renew(name, bc, pin)
+        warks = Warks.new()
+        ac = Account.new(bc,pin,name,warks)
+        ac.getLoans
+        ac.renewLoans
+        output = ac.printLoans
+        return output
+    end
 end
 
 get '/' do
@@ -20,8 +26,12 @@ get '/' do
     erb code
 end
 
-get '/go-go-owen-renew' do
-    loans
+get '/renew/:name/:bc/:pin' do
+    renew(params[:name],params[:bc],params[:pin])
+end
+
+get '/loans/:name/:bc/:pin' do
+    loans(params[:name],params[:bc],params[:pin])
 end
 
 #get '/go-go-damyanti-renew' do
