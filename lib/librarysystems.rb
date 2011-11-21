@@ -93,13 +93,11 @@ class Vubis < Librarysystem
         i = 0
         loans.loans.each do |loan|
             days = loan.duedate - DateTime.now
-            puts "#{loan.id}  #{days.to_i}"
             if (loan.renewals.to_i < 3 && days.to_i < 1)
                 renew_uri = renew_uri + loan.id.to_s + "^"
                 i += 1
             end
         end
-        puts renew_uri
         if (i>0)
             @page = @browser.get(renew_uri)
         end

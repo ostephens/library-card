@@ -14,12 +14,12 @@ class Loanitem
     end
     
     def printLoanitem
-        puts "-----------------------------  Item details  -----------------------------"
-        puts @id
-        puts @title
-        puts @loandate
-        puts @duedate
-        puts @renewals
-        puts @renewable
+        printed = "-----------------------------  Item details  -----------------------------"
+        printed += @id
+        printed += @title
+        printed += @loandate
+        printed += @duedate
+        printed += @renewals
+        printed += @renewable
     end
 end
