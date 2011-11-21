@@ -13,10 +13,6 @@ class Loanitem
         "ID: #{@id} Title: #{@title}  #{@authordesc}     Loan date: #{@loandate}   Due date: #{@duedate}   Renewals: #{@renewals}   Renewable? :#{renewable}\n"
     end
     
-    def to_html
-        "ID: #{@id} Title: #{@title}  #{@authordesc}     Loan date: #{@loandate}   Due date: #{@duedate}   Renewals: #{@renewals}   Renewable? :#{renewable}<br />"
-    end
-    
     def printLoanitem
         puts "-----------------------------  Item details  -----------------------------"
         puts @id

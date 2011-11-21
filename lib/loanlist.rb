@@ -14,17 +14,17 @@ class Loanlist
         end
     end
     
-    def to_html
-        @loans.each do |litem|
-            litem.to_html + "<br />"
-        end
-    end
-    
     def length
         @loans.length
     end
     
     def loans
         @loans
+    end
+    
+    def printLoanlist
+        @loans.each do |litem|
+            litem.printLoanitem
+        end
     end
 end
