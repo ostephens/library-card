@@ -11,7 +11,7 @@ get '/go-go-owen-renew' do
     owen.getLoans
     owen.renewLoans
     output = owen.currentloans.printLoanlist
-    "#{output}"
+    haml '#{output}'
 end
 
 #get '/go-go-damyanti-renew' do
@@ -19,12 +19,3 @@ end
 #    damyanti.renewLoans
 #    "#{damyanti.currentloans.to_s}"
 #end
-
-__END__
-
-  @@ layout
-  %html
-    = yield
-
-  @@ index
-  %div.title Hello world!!!!!
