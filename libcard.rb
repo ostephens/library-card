@@ -11,7 +11,6 @@ get '/go-go-owen-renew' do
     owen.getLoans
     owen.renewLoans
     output = owen.currentloans.printLoanlist
-    "#{output}"
 end
 
 #get '/go-go-damyanti-renew' do
