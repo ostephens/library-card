@@ -19,3 +19,12 @@ end
 #    damyanti.renewLoans
 #    "#{damyanti.currentloans.to_s}"
 #end
+
+__END__
+
+  @@ layout
+  %html
+    = yield
+
+  @@ index
+  %div.title Hello world!!!!!
