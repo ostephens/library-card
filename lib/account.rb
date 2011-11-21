@@ -27,4 +27,8 @@ class Account
         Pony.mail(:to => @email, :from => from, :subject => 'Loans due for renewal', :body => @currentloans.printLoanlist)
     end
     
+    def printLoans
+        @currentloans.to_s
+    end
+    
 end
