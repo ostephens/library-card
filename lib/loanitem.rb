@@ -15,11 +15,11 @@ class Loanitem
     
     def printLoanitem
         printed = "-----------------------------  Item details  -----------------------------"
-        printed += @id
-        printed += @title
-        printed += @loandate
-        printed += @duedate
-        printed += @renewals
-        printed += @renewable
+        printed += "#{@id}"
+        printed += "#{@title}"
+        printed += "#{@loandate}"
+        printed += "#{@duedate}"
+        printed += "#{@renewals}"
+        printed += "#{@renewable}"
     end
 end
