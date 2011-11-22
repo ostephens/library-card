@@ -57,7 +57,8 @@ class Vubis < Librarysystem
                 renewals = itemrow.xpath('td[7]').inner_text
                 if renewals > "2"
                     renewable = "No"
-                else
+                end
+                if renewable != "No"
                     renewable = "Yes"
                 end
                 due_s = itemrow.xpath('td[6]').inner_text
