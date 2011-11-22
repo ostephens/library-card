@@ -96,7 +96,7 @@ class Vubis < Librarysystem
         i = 0
         loans.loans.each do |loan|
             days = loan.duedate - DateTime.now
-            if (loan.renewals.to_i < 3 && loan.renewable == "Yes")
+            if (loan.renewable == "Yes" && days.to_i < 1)
                 renew_uri = renew_uri + loan.id.to_s + "^"
                 i += 1
             end
