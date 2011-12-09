@@ -1,2 +1,5 @@
+Check system is available before trying anything
+Close browser sessions with catalogue - add 'log off' click?
 Handle browser sessions with catalogue
+Make renew function check contents of loanslist first, and then populate (or try to) if empty - make sure doesn't go into loop if there are no items on the account!
 Nicer interface? (chance to learn RoR)
