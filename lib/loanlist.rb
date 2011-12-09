@@ -29,4 +29,12 @@ class Loanlist
         end
         return list
     end
+    
+    def htmlLoanlist
+        table = "<table><tr><th>ID</th><th>Title</th><th>Loan Date</th><th>Due date</th><th>Number of renewals</th><th>Renewable?</th>"
+        @loans.each do |litem|
+            table += litem.htmlLoanitem.to_s
+        end
+        return table
+    end
 end

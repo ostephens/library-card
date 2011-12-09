@@ -18,6 +18,10 @@ class Loanitem
         printed = "ID: #{@id} Title: #{@title}  #{@authordesc}     Loan date: #{@loandate}   Due date: #{@duedate}   Renewals: #{@renewals}   Renewable? #{renewable}<br />"
     end
     
+    def htmlLoanitem
+        html = "<td>#{@id}</td><td>#{@title}  #{@authordesc}</td><td>#{@loandate}</td><td>#{@duedate}</td><td>#{@renewals}</td><td>#{renewable}</td>"
+    end
+    
     def printplainLoanitem
         printed = "-----------------------------  Item details  -----------------------------"
         printed += "#{@id}"
