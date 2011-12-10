@@ -8,7 +8,7 @@ helpers do
         warks = Warks.new()
         ac = Account.new(bc,pin,name,warks)
         ac.getLoans
-//        output = ac.printLoans
+#        output = ac.printLoans
         output = ac.htmlLoans
         return output
     end

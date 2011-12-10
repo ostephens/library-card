@@ -35,7 +35,7 @@ class Loanlist
         @loans.each do |litem|
             table += litem.htmlLoanitem.to_s
         end
-        table = "</table>"
+        table += "</table>"
         return table
     end
 end
