@@ -31,4 +31,8 @@ class Account
         @currentloans.printLoanlist
     end
     
+    def htmlLoans
+        @currentloans.htmlLoanlist
+    end
+    
 end
