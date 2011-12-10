@@ -31,10 +31,11 @@ class Loanlist
     end
     
     def htmlLoanlist
-        table = "<table><tr><th>ID</th><th>Title</th><th>Loan Date</th><th>Due date</th><th>Number of renewals</th><th>Renewable?</th>"
+        table = "<table><tr><th>ID</th><th>Title</th><th>Loan Date</th><th>Due date</th><th>Number of renewals</th><th>Renewable?</th></tr>"
         @loans.each do |litem|
             table += litem.htmlLoanitem.to_s
         end
+        table = "</table>"
         return table
     end
 end

@@ -19,7 +19,7 @@ class Loanitem
     end
     
     def htmlLoanitem
-        html = "<td>#{@id}</td><td>#{@title}  #{@authordesc}</td><td>#{@loandate}</td><td>#{@duedate}</td><td>#{@renewals}</td><td>#{renewable}</td>"
+        html = "<tr><td>#{@id}</td><td>#{@title}  #{@authordesc}</td><td>#{@loandate}</td><td>#{@duedate}</td><td>#{@renewals}</td><td>#{renewable}</td></tr>"
     end
     
     def printplainLoanitem
