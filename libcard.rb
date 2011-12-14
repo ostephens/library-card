@@ -17,7 +17,8 @@ helpers do
         ac = Account.new(bc,pin,name,warks)
         ac.getLoans
         ac.renewLoans
-        output = ac.printLoans
+#        output = ac.printLoans
+        output = ac.htmlLoans
         return output
     end
 end
