@@ -35,9 +35,3 @@ end
 get '/loans/:name/:bc/:pin' do
     loans(params[:name],params[:bc],params[:pin])
 end
-
-#get '/go-go-damyanti-renew' do
-#    damayanti.getCurrentloans
-#    damyanti.renewLoans
-#    "#{damyanti.currentloans.to_s}"
-#end
