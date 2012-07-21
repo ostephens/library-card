@@ -5,9 +5,9 @@ require './lib/account'
 
 helpers do
     def loans(libsys, name, bc, pin)
-        if (libsys === "warks")
+        if (libsys == "warks")
             lib = Warks.new()
-        elsif (libsys === "chicago")
+        elsif (libsys == "chicago")
             lib = Tlccarl.new()
         else
             lib = Warks.new()
@@ -19,9 +19,9 @@ helpers do
         return output
     end
     def renew(name, bc, pin, libsys)
-        if (libsys === "warks")
+        if (libsys == "warks")
             lib = Warks.new()
-        elsif (libsys === "chicago")
+        elsif (libsys == "chicago")
             lib = Tlccarl.new()
         else
             lib = Warks.new()
