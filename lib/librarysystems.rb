@@ -115,3 +115,78 @@ class Warks < Vubis
         @url = "https://library.warwickshire.gov.uk/vs/"
     end
 end
+
+class Tlccarl < Librarysystem
+    def initialize(url)
+        super(url)
+        @browser = Mechanize.new { |agent|
+            agent.user_agent_alias = 'Mac Safari'
+        }
+    end
+    attr_accessor :browser, :page
+    
+    def logIn(url,barcode,pin)
+        @page = @browser.get(url)
+        @page = @page.form_with(:id => 'loginForm') do |form|
+            form.patronId = barcode
+            form.zipCode = pin
+        end.submit
+    end
+
+    def scrapeLoans
+        l = Loanlist.new()
+        @page.xpath('table[1]/tr').each do |itemrow|
+            id = itemrow.xpath('td[1]/input/@value')
+            title = itemrow.xpath('td[2]').inner_text.chop.strip
+            due_s = itemrow.xpath('td[4]').inner_text
+            due = Date.strptime(due_s, "%m/%d/%Y")
+                l.addLoan(Loanitem.new(id, title,loan_date,due,renewals,renewable))
+            end
+        end
+        return l
+    end
+    
+    def gotoSummary
+        @page = @browser.get("https://www.chipublib.org/mycpl/summary/")
+    end
+
+    def getCurrentloans(barcode, pin)
+        #this is where we retrieve current loans and use it to create an array of loanitem objects
+        self.logIn(@url,barcode,pin)
+        self.gotoSummary
+        self.scrapeLoans
+        #Need to add code to get loans and overdues (as Chicago splits these)
+#        itemtable = @page.parser.xpath('//form/table[3]')
+#        self.scrapeCurrentloans(itemtable)
+    end
+
+    def renewLoans(barcode,pin,loans)
+        # check we have some loans
+
+        if (loans.length == 0)
+            return false
+        end
+
+        # login and renew loans in @currentloan
+        i = 0
+        loans.loans.each do |loan|
+            days = loan.duedate - DateTime.now
+            if (loan.renewable == "Yes" && days.to_i < 1)
+                renew_uri = renew_uri + loan.id.to_s + "^"
+                i += 1
+            end
+        end
+        if (i>0)
+            @page = @browser.get(renew_uri)
+        end
+        itemtable = @page.parser.xpath('//form/table[3]')
+        return self.scrapeCurrentloans(itemtable)        
+    end
+end
+
+class Chicago < Tlccarl
+    def initialize()
+        super(browser)
+        @url = "https://www.chipublib.org/mycpl/login/"
+    end
+end
