@@ -8,7 +8,7 @@ helpers do
         if (libsys == "warks")
             lib = Warks.new()
         elsif (libsys == "chicago")
-            lib = Tlccarl.new()
+            lib = Chicago.new()
         else
             lib = Warks.new()
         end
@@ -22,7 +22,7 @@ helpers do
         if (libsys == "warks")
             lib = Warks.new()
         elsif (libsys == "chicago")
-            lib = Tlccarl.new()
+            lib = Chicago.new()
         else
             lib = Warks.new()
         end
