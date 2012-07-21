@@ -4,17 +4,29 @@ require './lib/librarysystems'
 require './lib/account'
 
 helpers do
-    def loans(name, bc, pin)
-        warks = Warks.new()
-        ac = Account.new(bc,pin,name,warks)
+    def loans(libsys, name, bc, pin)
+        if (libsys === "warks")
+            lib = Warks.new()
+        elsif (libsys === "chicago")
+            lib = Tlccarl.new()
+        else
+            lib = Warks.new()
+        end
+        ac = Account.new(bc,pin,name,lib)
         ac.getLoans
 #        output = ac.printLoans
         output = ac.htmlLoans
         return output
     end
-    def renew(name, bc, pin)
-        warks = Warks.new()
-        ac = Account.new(bc,pin,name,warks)
+    def renew(name, bc, pin, libsys)
+        if (libsys === "warks")
+            lib = Warks.new()
+        elsif (libsys === "chicago")
+            lib = Tlccarl.new()
+        else
+            lib = Warks.new()
+        end
+        ac = Account.new(bc,pin,name,lib)
         ac.getLoans
         ac.renewLoans
 #        output = ac.printLoans
@@ -28,10 +40,10 @@ get '/' do
     erb code
 end
 
-get '/renew/:name/:bc/:pin' do
-    renew(params[:name],params[:bc],params[:pin])
+get '/renew/:libsys/:name/:bc/:pin' do
+    renew(params[:libsys],params[:name],params[:bc],params[:pin])
 end
 
-get '/loans/:name/:bc/:pin' do
-    loans(params[:name],params[:bc],params[:pin])
+get '/loans/:libsys/:name/:bc/:pin' do
+    loans(params[:libsys],params[:name],params[:bc],params[:pin])
 end
