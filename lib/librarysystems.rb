@@ -140,8 +140,7 @@ class Tlccarl < Librarysystem
             title = itemrow.xpath('td[2]').inner_text.chop.strip
             due_s = itemrow.xpath('td[4]').inner_text
             due = Date.strptime(due_s, "%m/%d/%Y")
-                l.addLoan(Loanitem.new(id, title,loan_date,due,renewals,renewable))
-            end
+            l.addLoan(Loanitem.new(id, title,loan_date,due,renewals,renewable))
         end
         return l
     end
@@ -155,9 +154,6 @@ class Tlccarl < Librarysystem
         self.logIn(@url,barcode,pin)
         self.gotoSummary
         self.scrapeLoans
-        #Need to add code to get loans and overdues (as Chicago splits these)
-#        itemtable = @page.parser.xpath('//form/table[3]')
-#        self.scrapeCurrentloans(itemtable)
     end
 
     def renewLoans(barcode,pin,loans)
