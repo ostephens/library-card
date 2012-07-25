@@ -127,7 +127,7 @@ class Tlccarl < Librarysystem
     
     def logIn(url,barcode,pin)
         @page = @browser.get(url)
-        @page = @page.form_with(:id => 'loginForm') do |form|
+        @page = @page.form_with(:action => '/mycpl/login/') do |form|
             form.patronId = barcode
             form.zipCode = pin
         end.submit
@@ -135,7 +135,7 @@ class Tlccarl < Librarysystem
 
     def scrapeLoans
         l = Loanlist.new()
-        @page.xpath('table[1]/tr').each do |itemrow|
+        @page.search('table[1]/tr').each do |itemrow|
             id = itemrow.xpath('td[1]/input/@value')
             title = itemrow.xpath('td[2]').inner_text.chop.strip
             due_s = itemrow.xpath('td[4]').inner_text
