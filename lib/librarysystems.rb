@@ -135,6 +135,8 @@ class Tlccarl < Librarysystem
     end
 
     def scrapeLoans
+        #currently assumes single table. But there can be a table of loans, a table of overdues
+        #both or neither. Need to test for existence of table in each section
         l = Loanlist.new()
         i = 0
         @page.parser.xpath('//table[1]/tr').each do |itemrow|
