@@ -135,17 +135,24 @@ class Tlccarl < Librarysystem
 
     def scrapeLoans
         l = Loanlist.new()
-        @page.search('table[1]/tr').each do |itemrow|
+        i = 0
+        @page.parser.xpath('//table[1]/tr').each do |itemrow|
+            i += 1
+            next if i == 1
             id = itemrow.xpath('td[1]/input/@value')
             title = itemrow.xpath('td[2]').inner_text.chop.strip
             due_s = itemrow.xpath('td[4]').inner_text
             due = Date.strptime(due_s, "%m/%d/%Y")
+            loan_date = ""
+            renewals = ""
+            renewable = ""
             l.addLoan(Loanitem.new(id, title,loan_date,due,renewals,renewable))
         end
         return l
     end
     
     def gotoSummary
+        #this needs to come from chicago, not in Tlccarl
         @page = @browser.get("https://www.chipublib.org/mycpl/summary/")
     end
 
