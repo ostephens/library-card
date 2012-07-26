@@ -127,6 +127,7 @@ class Tlccarl < Librarysystem
     
     def logIn(url,barcode,pin)
         @page = @browser.get(url)
+        #this next line is Chicago specific - change or move this method into Chicago class?
         @page = @page.form_with(:action => '/mycpl/login/') do |form|
             form.patronId = barcode
             form.zipCode = pin
