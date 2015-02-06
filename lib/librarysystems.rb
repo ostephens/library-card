@@ -44,7 +44,7 @@ class Vubis < Librarysystem
 
     def gotoLoanhistory
         @page = @browser.click(@page.frame_with(:name => 'Body'))
-        @page = @browser.click(@page.link_with(:text => /My loans history/))
+        @page = @browser.click(@page.link_with(:text => /My loan history/))
         borrower_id = @page.parser.xpath("//frame[@name='Body']").attribute("src").to_s.sub(/(.*BorrowerId=)([^&]*)(.*$)/,'\2')
         @page = @browser.click(@page.frame_with(:name => 'Body'))
         return borrower_id
