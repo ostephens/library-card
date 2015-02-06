@@ -25,7 +25,7 @@ class Account
     end
 
     def getHistory
-        @currentloans = @libsys.getCurrentloans(@barcode, @pin)
+        @loanhistory = @libsys.getLoanhistory(@barcode, @pin)
     end
 
     def send_email(from)
