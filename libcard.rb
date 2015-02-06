@@ -18,7 +18,7 @@ helpers do
         output = ac.htmlLoans
         return output
     end
-    def renew(name, bc, pin, libsys)
+    def renew(libsys, name, bc, pin)
         if (libsys == "warks")
             lib = Warks.new()
         elsif (libsys == "chicago")
@@ -33,7 +33,7 @@ helpers do
         output = ac.htmlLoans
         return output
     end
-    def history(name, bc, pin, libsys)
+    def history(libsys, name, bc, pin)
         if (libsys == "warks")
             lib = Warks.new()
         elsif (libsys == "chicago")

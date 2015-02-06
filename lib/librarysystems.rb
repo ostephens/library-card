@@ -84,8 +84,10 @@ class Vubis < Librarysystem
             else
                 id = itemrow.xpath('td[1]/input/@id')
                 title = itemrow.xpath('td[2]').inner_text.chop.strip
-                loan_date = itemrow.xpath('td[5]').inner_text
-                l.addLoan(Loanitem.new(id,title,loan_date,"n/a","n/a","n/a"))
+                loan_date = itemrow.xpath('td[4]').inner_text
+                d_date = itemrow.xpath('td[5]').inner_text.chop.strip
+                due_date = Date.strptime(d_date, "%d/%m/%Y")
+                l.addLoan(Loanitem.new(id,title,loan_date,due_date,"n/a","n/a"))
             end
         end
         return l
