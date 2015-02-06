@@ -60,3 +60,7 @@ end
 get '/loans/:libsys/:name/:bc/:pin' do
     loans(params[:libsys],params[:name],params[:bc],params[:pin])
 end
+
+get '/history/:libsys/:name/:bc/:pin' do
+    loans(params[:libsys],params[:name],params[:bc],params[:pin])
+end
