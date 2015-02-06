@@ -10,10 +10,11 @@ class Account
         @libsys = libsys
         @currentloans = Loanlist.new()
         @borrower_id
+        @loanhistory = Loanlist.new()
     end
     
     attr_reader :barcode, :pin, :email, :libsys
-    attr_accessor :currentloans, :borrower_id
+    attr_accessor :currentloans, :borrower_id, :loanhistory
     
     def getLoans
         @currentloans = @libsys.getCurrentloans(@barcode, @pin)
@@ -22,7 +23,11 @@ class Account
     def renewLoans
         @currentloans = @libsys.renewLoans(@barcode,@pin,@currentloans)
     end
-    
+
+    def getHistory
+        @currentloans = @libsys.getCurrentloans(@barcode, @pin)
+    end
+
     def send_email(from)
         Pony.mail(:to => @email, :from => from, :subject => 'Loans due for renewal', :body => @currentloans.printLoanlist)
     end
@@ -33,6 +38,10 @@ class Account
     
     def htmlLoans
         @currentloans.htmlLoanlist
+    end
+
+    def htmlHistory
+        @loanhistory.htmlLoanlist
     end
     
 end

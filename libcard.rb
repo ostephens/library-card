@@ -33,6 +33,19 @@ helpers do
         output = ac.htmlLoans
         return output
     end
+    def history(name, bc, pin, libsys)
+        if (libsys == "warks")
+            lib = Warks.new()
+        elsif (libsys == "chicago")
+            lib = Chicago.new()
+        else
+            lib = Warks.new()
+        end
+        ac = Account.new(bc,pin,name,lib)
+        ac.getHistory
+        output = ac.htmlHistory
+        return output
+    end
 end
 
 get '/' do

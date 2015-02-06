@@ -42,6 +42,14 @@ class Vubis < Librarysystem
         return borrower_id
     end
 
+    def gotoLoanhistory
+        @page = @browser.click(@page.frame_with(:name => 'Body'))
+        @page = @browser.click(@page.link_with(:text => /My loans history/))
+        borrower_id = @page.parser.xpath("//frame[@name='Body']").attribute("src").to_s.sub(/(.*BorrowerId=)([^&]*)(.*$)/,'\2')
+        @page = @browser.click(@page.frame_with(:name => 'Body'))
+        return borrower_id
+    end
+
     def scrapeCurrentloans(table)
         l = Loanlist.new()
         table.xpath('table[3]/tr').each do |itemrow|
@@ -69,12 +77,33 @@ class Vubis < Librarysystem
         return l
     end
 
+    def scrapeLoanhistory(table)
+        l = Loanlist.new()
+        table.xpath('tr').each do |itemrow|
+            if itemrow.xpath('td[1]').attribute("class").to_s == 'listhead'
+            else
+                id = itemrow.xpath('td[1]/input/@id')
+                title = itemrow.xpath('td[2]').inner_text.chop.strip
+                loan_date = itemrow.xpath('td[5]').inner_text
+                l.addLoan(Loanitem.new(id,title,loan_date,"n/a","n/a","n/a"))
+            end
+        end
+        return l
+    end
+
     def getCurrentloans(barcode, pin)
         #this is where we retrieve current loans and use it to create an array of loanitem objects
         self.logIn(@url + "Pa.csp?OpacLanguage=eng&Profile=Default",barcode,pin)
         self.gotoCurrentloans
         itemtable = @page.parser.xpath('//form/table[3]')
         self.scrapeCurrentloans(itemtable)
+    end
+
+    def getLoanhistory(barcode,pin)
+        self.logIn(@url + "Pa.csp?OpacLanguage=eng&Profile=Default",barcode,pin)
+        self.gotoLoanhistory
+        historytable = @page.parser.xpath('//form/table[1]')
+        self.scrapeLoanhistory(historytable)
     end
 
     def renewLoans(barcode,pin,loans)
