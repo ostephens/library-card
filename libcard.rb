@@ -62,5 +62,5 @@ get '/loans/:libsys/:name/:bc/:pin' do
 end
 
 get '/history/:libsys/:name/:bc/:pin' do
-    loans(params[:libsys],params[:name],params[:bc],params[:pin])
+    history(params[:libsys],params[:name],params[:bc],params[:pin])
 end
