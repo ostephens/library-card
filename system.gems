@@ -1,0 +1,10 @@
+# system.gems generated gem export file. Note that any env variable settings will be missing. Append these after using a ';' field separator
+
+bigdecimal -v1.2.0
+io-console -v0.4.2
+json -v1.7.7
+minitest -v4.3.2
+psych -v2.0.0
+rake -v0.9.6
+rdoc -v4.0.0
+test-unit -v2.0.0.0

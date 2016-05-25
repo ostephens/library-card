@@ -6,6 +6,8 @@ GEM
     http-cookie (1.0.2)
       domain_name (~> 0.5)
     kgio (2.9.3)
+    lolsoap (0.8.1)
+      nokogiri (~> 1.5)
     mail (2.6.1)
       mime-types (>= 1.16, < 3)
     mechanize (2.7.3)
@@ -48,8 +50,15 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  lolsoap
   mechanize
   nokogiri
   pony
   sinatra
   unicorn
+
+RUBY VERSION
+   ruby 2.2.4p230
+
+BUNDLED WITH
+   1.12.5
