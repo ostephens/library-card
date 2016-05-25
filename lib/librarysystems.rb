@@ -75,14 +75,13 @@ class Iguana < Librarysystem
         @browser = Mechanize.new { |agent|
             agent.user_agent_alias = 'Mac Safari'
         }
-        @soap_client = LolSoap::Client.new(browser.get(url))
-        @csid = browser.cookies[0].value[12..21]
     end
 
-    attr_reader :csid
-    attr_accessor :sid
+    attr_accessor :csid, :sid, :browser, :soap_client
 
     def logIn(barcode,pin)
+        @soap_client = LolSoap::Client.new(@browser.get_file(url))
+        @csid = @browser.cookies[0].value[12..21]
         language = 'eng'
         profile = 'Iguana'
         r = @soap_client.request('CheckCredentials')
@@ -95,32 +94,31 @@ class Iguana < Librarysystem
         end
         raw_response = browser.post(r.url,r.content,r.headers)
         resp = soap_client.response(r,raw_response.body)
-        borrow_id = resp.body_hash["CheckCredentialsResult"]["BorrowerId"]
+        borrower_id = resp.body_hash["CheckCredentialsResult"]["BorrowerId"]
         category = resp.body_hash["CheckCredentialsResult"]["Category"]
         digital = resp.body_hash["CheckCredentialsResult"]["Digital"]
         email = resp.body_hash["CheckCredentialsResult"]["Email"]
         home_location = resp.body_hash["CheckCredentialsResult"]["HomeLocation"]
         password_expired = resp.body_hash["CheckCredentialsResult"]["PasswordExpired"]
-        @sid = resp.body_hash["CheckCredentialsResult"]["Session"]
+        @sid = resp.body_hash["CheckCredentialsResult"]["SessionId"]
         token = resp.body_hash["CheckCredentialsResult"]["Token"]
         user_age = resp.body_hash["CheckCredentialsResult"]["UserAge"]
         user_name = resp.body_hash["CheckCredentialsResult"]["UserName"]
         valid_requests = 'Welcome,CurrentLoans,CurrentReservations,LoanHistory,Interests,ReadingLists,SearchFilter'
         view_id = ''
         temp_list = ''
-
         p = {"BorrowerId"=>borrower_id,
             "Category"=>category,
             "CspSessionId"=>@csid,
             "Digital"=>digital,
             "Email"=>email,
-            "HomeLocation"=>home_location
+            "HomeLocation"=>home_location,
             "Language"=>language,
             "PasswordExpired"=>password_expired,
             "Profile"=>profile,
             "SessionId"=>@sid,
             "Token"=>token,
-            "UserAge"=>user_ago,
+            "UserAge"=>user_age,
             "UserName"=>user_name,
             "ValidRequests"=>valid_requests,
             "ViewId"=>view_id,
@@ -176,14 +174,13 @@ class Iguana < Librarysystem
         end
         raw_response = @browser.post(r.url,r.content,r.headers)
         resp = @soap_client.response(r,raw_response.body)
-
         resp.body.xpath("//xmlns:Item", 'xmlns'=>'http://tempuri.org').each do |i|
-            id = i.xpath("//xmlns:Barcode/text()", 'xmlns'=>'http://tempuri.org')[0]
-            title = i.xpath("//xmlns:Title/text()", 'xmlns'=>'http://tempuri.org')[0]
-            loan_date = Date.strptime(i.xpath("//xmlns:LoanDate/text()", 'xmlns'=>'http://tempuri.org')[0][0..7], "%Y%m%d")
-            due_date = Date.strptime(i.xpath("//xmlns:DueDate/text()", 'xmlns'=>'http://tempuri.org')[0], "%Y%m%d")
-            renewal_counter = i.xpath("//xmlns:RenewalCounter/text()", 'xmlns'=>'http://tempuri.org')[0]
-            if(renewal_counter === "0")
+            id = i.xpath("xmlns:Barcode/text()", 'xmlns'=>'http://tempuri.org').inner_text
+            title = i.xpath("xmlns:Title/text()", 'xmlns'=>'http://tempuri.org').inner_text
+            loan_date = Date.strptime(i.xpath("xmlns:LoanDate/text()", 'xmlns'=>'http://tempuri.org').inner_text[0..7], "%Y%m%d")
+            due_date = Date.strptime(i.xpath("xmlns:DueDate/text()", 'xmlns'=>'http://tempuri.org').inner_text, "%Y%m%d")
+            renewal_counter = i.xpath("xmlns:RenewalCounter/text()", 'xmlns'=>'http://tempuri.org').inner_text
+            if(renewal_counter === "1")
                 renewable = 'Yes'
             else
                 renewable = 'No'
@@ -200,7 +197,7 @@ class Iguana < Librarysystem
 
     def renewLoans(barcode,pin,loans)
         # check we have some loans
-
+        puts "Number of loans: " + loans.length.to_s
         if (loans.length == 0)
             return false
         end
@@ -210,7 +207,8 @@ class Iguana < Librarysystem
 
         # login and renew loans in @currentloans
         loans.loans.each do |loan|
-            days = loan.duedate - DateTime.now
+            days = loan.duedate - Date.today
+            puts "Days: "+days.to_s
             if (loan.renewable == "Yes" && days.to_i < 1)
                 r = @soap_client.request('Renewal')
                 r.body do |b|
@@ -221,8 +219,8 @@ class Iguana < Librarysystem
                 resp = @soap_client.response(r,raw_response.body)
             end
         end
-        self.getCurrentloans(barcode,pin)
-        return 
+        return self.getCurrentloans(barcode,pin)
+        
 =begin
     
         <Renewal>
@@ -252,14 +250,6 @@ class Iguana < Librarysystem
 
     end
 end
-
-class WarksIguana < Iguana
-    def initialize()
-        super(client)
-        @url = "https://library.warwickshire.gov.uk/iguana/Proxy.UserActivities.cls?WSDL"
-    end
-end
-
 
 class Vubis < Librarysystem
     def initialize(url)
@@ -389,13 +379,6 @@ class Vubis < Librarysystem
     end
 end
 
-class Warks < Vubis
-    def initialize()
-        super(browser)
-        @url = "https://library.warwickshire.gov.uk/vs/"
-    end
-end
-
 class Tlccarl < Librarysystem
     def initialize(url)
         super(url)
@@ -467,6 +450,20 @@ class Tlccarl < Librarysystem
         end
         itemtable = @page.parser.xpath('//form/table[3]')
         return self.scrapeCurrentloans(itemtable)        
+    end
+end
+
+class Warks < Vubis
+    def initialize()
+        super(browser)
+        @url = "https://library.warwickshire.gov.uk/vs/"
+    end
+end
+
+class Warksiguana < Iguana
+    def initialize()
+        super(browser)
+        @url = "https://library.warwickshire.gov.uk/iguana/Proxy.UserActivities.cls?WSDL"
     end
 end
 
