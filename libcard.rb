@@ -7,6 +7,8 @@ helpers do
     def loans(libsys, name, bc, pin)
         if (libsys == "warks")
             lib = Warks.new()
+        elsif(libsys == "warksiguana")
+            lib = WarksIguana.new()
         elsif (libsys == "chicago")
             lib = Chicago.new()
         else
@@ -21,6 +23,8 @@ helpers do
     def renew(libsys, name, bc, pin)
         if (libsys == "warks")
             lib = Warks.new()
+        elsif(libsys == "warksiguana")
+            lib = WarksIguana.new()
         elsif (libsys == "chicago")
             lib = Chicago.new()
         else
@@ -36,6 +40,8 @@ helpers do
     def history(libsys, name, bc, pin)
         if (libsys == "warks")
             lib = Warks.new()
+        elsif(libsys == "warksiguana")
+            lib = WarksIguana.new()
         elsif (libsys == "chicago")
             lib = Chicago.new()
         else

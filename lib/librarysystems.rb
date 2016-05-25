@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'mechanize'
+require 'lolsoap'
 require 'nokogiri'
 require 'pony'
 require './lib/loanitem'
@@ -67,6 +68,198 @@ class Librarysystem
     attr_reader :url
     attr_accessor :barcode, :pin
 end
+
+class Iguana < Librarysystem
+    def initialize(url)
+        super(url)
+        @browser = Mechanize.new { |agent|
+            agent.user_agent_alias = 'Mac Safari'
+        }
+        @soap_client = LolSoap::Client.new(browser.get(url))
+        @csid = browser.cookies[0].value[12..21]
+    end
+
+    attr_reader :csid
+    attr_accessor :sid
+
+    def logIn(barcode,pin)
+        language = 'eng'
+        profile = 'Iguana'
+        r = @soap_client.request('CheckCredentials')
+        r.body do |b|
+            b.Language language
+            b.Profile profile
+            b.CspSessionId @csid
+            b.LogonId barcode
+            b.Password pin
+        end
+        raw_response = browser.post(r.url,r.content,r.headers)
+        resp = soap_client.response(r,raw_response.body)
+        borrow_id = resp.body_hash["CheckCredentialsResult"]["BorrowerId"]
+        category = resp.body_hash["CheckCredentialsResult"]["Category"]
+        digital = resp.body_hash["CheckCredentialsResult"]["Digital"]
+        email = resp.body_hash["CheckCredentialsResult"]["Email"]
+        home_location = resp.body_hash["CheckCredentialsResult"]["HomeLocation"]
+        password_expired = resp.body_hash["CheckCredentialsResult"]["PasswordExpired"]
+        @sid = resp.body_hash["CheckCredentialsResult"]["Session"]
+        token = resp.body_hash["CheckCredentialsResult"]["Token"]
+        user_age = resp.body_hash["CheckCredentialsResult"]["UserAge"]
+        user_name = resp.body_hash["CheckCredentialsResult"]["UserName"]
+        valid_requests = 'Welcome,CurrentLoans,CurrentReservations,LoanHistory,Interests,ReadingLists,SearchFilter'
+        view_id = ''
+        temp_list = ''
+
+        p = {"BorrowerId"=>borrower_id,
+            "Category"=>category,
+            "CspSessionId"=>@csid,
+            "Digital"=>digital,
+            "Email"=>email,
+            "HomeLocation"=>home_location
+            "Language"=>language,
+            "PasswordExpired"=>password_expired,
+            "Profile"=>profile,
+            "SessionId"=>@sid,
+            "Token"=>token,
+            "UserAge"=>user_ago,
+            "UserName"=>user_name,
+            "ValidRequests"=>valid_requests,
+            "ViewId"=>view_id,
+            "tempList"=>temp_list}
+        @browser.put("https://library.warwickshire.gov.uk/iguana/Proxy.SetLogon.cls",
+                    URI.encode_www_form(p),
+                    "Content-Type"=>"application/x-www-form-urlencoded")
+=begin
+
+        <CheckCredentials>
+            <Language>eng</Language>
+            <Profile>Iguana</Profile>
+            <CspSessionId>BINBmIAfxG</CspSessionId>
+            <LogonId>4356489X</LogonId>
+            <Password>19041972</Password>
+        </CheckCredentials>
+
+=end
+
+=begin
+        <CheckCredentialsResponse xmlns="http://tempuri.org">
+            <CheckCredentialsResult>
+                <Result>1</Result>
+                <UserName>Owen Stephens</UserName>
+                <Avatar/>
+                <SearchFilter/>
+                <HomeLocation>WARKS/LEA</HomeLocation>
+                <OtherLocs/>
+                <Category>A</Category>
+                <Email>owen.patel@gmail.com</Email>
+                <SessionId>*B3*10Y*D3u*BC*14*F8*97*03w*15*09*F4*0C*E0</SessionId>
+                <BorrowerId>WARKS.43250634</BorrowerId>
+                <Token>*E1*2B*B7a*F4*8F*D4*A6*0E*03*A63*17fB*17</Token>
+                <UserAge>44^19/04/1972</UserAge>
+                <Digital>0</Digital>
+                <PasswordExpired>0</PasswordExpired>
+            </CheckCredentialsResult>
+        </CheckCredentialsResponse>
+=end
+    #get SessionId from response. Possibly BorrowerId and Token
+    end
+
+    def getCurrentloans(barcode,pin)
+        l = Loanlist.new()
+        if(!defined?(@sid) || @sid.length == 0)
+            self.logIn(barcode,pin)
+        end
+        r = @soap_client.request('CurrentLoans')
+        r.body do |b|
+            b.SessionId @sid
+            b.Data.From '1'
+            b.Data.To '10'
+        end
+        raw_response = @browser.post(r.url,r.content,r.headers)
+        resp = @soap_client.response(r,raw_response.body)
+
+        resp.body.xpath("//xmlns:Item", 'xmlns'=>'http://tempuri.org').each do |i|
+            id = i.xpath("//xmlns:Barcode/text()", 'xmlns'=>'http://tempuri.org')[0]
+            title = i.xpath("//xmlns:Title/text()", 'xmlns'=>'http://tempuri.org')[0]
+            loan_date = Date.strptime(i.xpath("//xmlns:LoanDate/text()", 'xmlns'=>'http://tempuri.org')[0][0..7], "%Y%m%d")
+            due_date = Date.strptime(i.xpath("//xmlns:DueDate/text()", 'xmlns'=>'http://tempuri.org')[0], "%Y%m%d")
+            renewal_counter = i.xpath("//xmlns:RenewalCounter/text()", 'xmlns'=>'http://tempuri.org')[0]
+            if(renewal_counter === "0")
+                renewable = 'Yes'
+            else
+                renewable = 'No'
+            end
+            # Need to check on 'Renewal' and 'RenewalException' options to see how these would
+            # influence renewable value
+            l.addLoan(Loanitem.new(id, title,loan_date,due_date,renewal_counter,renewable))
+        end
+        return l
+    end
+
+    def getLoanhistory(barcode,pin)
+    end
+
+    def renewLoans(barcode,pin,loans)
+        # check we have some loans
+
+        if (loans.length == 0)
+            return false
+        end
+        if(!defined?(@sid) || @sid.length == 0)
+            self.logIn(barcode,pin)
+        end
+
+        # login and renew loans in @currentloans
+        loans.loans.each do |loan|
+            days = loan.duedate - DateTime.now
+            if (loan.renewable == "Yes" && days.to_i < 1)
+                r = @soap_client.request('Renewal')
+                r.body do |b|
+                    b.SessionId @sid
+                    b.Item.Barcode = loan.id
+                end
+                raw_response = @browser.post(r.url,r.content,r.headers)
+                resp = @soap_client.response(r,raw_response.body)
+            end
+        end
+        self.getCurrentloans(barcode,pin)
+        return 
+=begin
+    
+        <Renewal>
+            <SessionId>*DD*FAA*0B9*95*A6S*01*23*E9*8D*1D*FE*07*17</SessionId>
+            <Items>
+                <Item>
+                    <Barcode>013309086X</Barcode>
+                </Item>
+            </Items>
+        </Renewal>
+=end
+
+=begin
+        <RenewalResponse xmlns="http://tempuri.org">
+            <RenewalResult>
+                <Items>
+                    <Item>
+                        <Barcode>013309086X</Barcode>
+                        <DueDate>20160608</DueDate>
+                        <Success>1</Success>
+                        <RefusalReason/>
+                    </Item>
+                </Items>
+            </RenewalResult>
+        </RenewalResponse>
+=end
+
+    end
+end
+
+class WarksIguana < Iguana
+    def initialize()
+        super(client)
+        @url = "https://library.warwickshire.gov.uk/iguana/Proxy.UserActivities.cls?WSDL"
+    end
+end
+
 
 class Vubis < Librarysystem
     def initialize(url)
