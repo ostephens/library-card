@@ -180,10 +180,11 @@ class Iguana < Librarysystem
             loan_date = Date.strptime(i.xpath("xmlns:LoanDate/text()", 'xmlns'=>'http://tempuri.org').inner_text[0..7], "%Y%m%d")
             due_date = Date.strptime(i.xpath("xmlns:DueDate/text()", 'xmlns'=>'http://tempuri.org').inner_text, "%Y%m%d")
             renewal_counter = i.xpath("xmlns:RenewalCounter/text()", 'xmlns'=>'http://tempuri.org').inner_text
-            if(renewal_counter === "1")
+            renewal_allowed = i.xpath("xmlns:Renewal/text()", 'xmlns'=>'http://tempuri.org').inner_text
+            if(renewal_allowed === "1")
                 renewable = 'Yes'
             else
-                renewable = 'No'
+                renewable = i.xpath("xmlns:RenewalException/text()", 'xmlns'=>'http://tempuri.org').inner_text
             end
             # Need to check on 'Renewal' and 'RenewalException' options to see how these would
             # influence renewable value
