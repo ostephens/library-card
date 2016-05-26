@@ -154,8 +154,6 @@ class Iguana < Librarysystem
             else
                 renewable = i.xpath("xmlns:RenewalException/text()", 'xmlns'=>'http://tempuri.org').inner_text
             end
-            # Need to check on 'Renewal' and 'RenewalException' options to see how these would
-            # influence renewable value
             l.addLoan(Loanitem.new(id, title,loan_date,due_date,renewal_counter,renewable))
         end
         return l
