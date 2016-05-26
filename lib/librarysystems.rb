@@ -126,39 +126,7 @@ class Iguana < Librarysystem
         @browser.put("https://library.warwickshire.gov.uk/iguana/Proxy.SetLogon.cls",
                     URI.encode_www_form(p),
                     "Content-Type"=>"application/x-www-form-urlencoded")
-=begin
 
-        <CheckCredentials>
-            <Language>eng</Language>
-            <Profile>Iguana</Profile>
-            <CspSessionId>BINBmIAfxG</CspSessionId>
-            <LogonId>4356489X</LogonId>
-            <Password>19041972</Password>
-        </CheckCredentials>
-
-=end
-
-=begin
-        <CheckCredentialsResponse xmlns="http://tempuri.org">
-            <CheckCredentialsResult>
-                <Result>1</Result>
-                <UserName>Owen Stephens</UserName>
-                <Avatar/>
-                <SearchFilter/>
-                <HomeLocation>WARKS/LEA</HomeLocation>
-                <OtherLocs/>
-                <Category>A</Category>
-                <Email>owen.patel@gmail.com</Email>
-                <SessionId>*B3*10Y*D3u*BC*14*F8*97*03w*15*09*F4*0C*E0</SessionId>
-                <BorrowerId>WARKS.43250634</BorrowerId>
-                <Token>*E1*2B*B7a*F4*8F*D4*A6*0E*03*A63*17fB*17</Token>
-                <UserAge>44^19/04/1972</UserAge>
-                <Digital>0</Digital>
-                <PasswordExpired>0</PasswordExpired>
-            </CheckCredentialsResult>
-        </CheckCredentialsResponse>
-=end
-    #get SessionId from response. Possibly BorrowerId and Token
     end
 
     def getCurrentloans(barcode,pin)
@@ -221,33 +189,6 @@ class Iguana < Librarysystem
             end
         end
         return self.getCurrentloans(barcode,pin)
-        
-=begin
-    
-        <Renewal>
-            <SessionId>*DD*FAA*0B9*95*A6S*01*23*E9*8D*1D*FE*07*17</SessionId>
-            <Items>
-                <Item>
-                    <Barcode>013309086X</Barcode>
-                </Item>
-            </Items>
-        </Renewal>
-=end
-
-=begin
-        <RenewalResponse xmlns="http://tempuri.org">
-            <RenewalResult>
-                <Items>
-                    <Item>
-                        <Barcode>013309086X</Barcode>
-                        <DueDate>20160608</DueDate>
-                        <Success>1</Success>
-                        <RefusalReason/>
-                    </Item>
-                </Items>
-            </RenewalResult>
-        </RenewalResponse>
-=end
 
     end
 end
