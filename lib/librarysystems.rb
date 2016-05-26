@@ -81,8 +81,6 @@ class Iguana < Librarysystem
 
     def logIn(barcode,pin)
         @soap_client = LolSoap::Client.new(@browser.get_file(url))
-        puts "TEST"
-        puts @browser.cookies
         @csid = @browser.cookies[0].value[12..21]
         language = 'eng'
         profile = 'Iguana'
