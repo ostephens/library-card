@@ -92,7 +92,7 @@ class Iguana < Librarysystem
             b.LogonId barcode
             b.Password pin
         end
-        raw_response = browser.post(r.url,r.content,r.headers)
+        raw_response = @browser.post(r.url,r.content,r.headers)
         resp = soap_client.response(r,raw_response.body)
         borrower_id = resp.body_hash["CheckCredentialsResult"]["BorrowerId"]
         category = resp.body_hash["CheckCredentialsResult"]["Category"]
@@ -138,7 +138,7 @@ class Iguana < Librarysystem
         r.body do |b|
             b.SessionId @sid
             b.Data.From '1'
-            b.Data.To '10'
+            b.Data.To '30'
         end
         raw_response = @browser.post(r.url,r.content,r.headers)
         resp = @soap_client.response(r,raw_response.body)
@@ -180,7 +180,7 @@ class Iguana < Librarysystem
                 r = @soap_client.request('Renewal')
                 r.body do |b|
                     b.SessionId @sid
-                    b.Item.Barcode = loan.id
+                    b.Items.Item.Barcode = loan.id
                 end
                 raw_response = @browser.post(r.url,r.content,r.headers)
                 resp = @soap_client.response(r,raw_response.body)
