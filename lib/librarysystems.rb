@@ -164,24 +164,23 @@ class Iguana < Librarysystem
 
     def renewLoans(barcode,pin,loans)
         # check we have some loans
-        puts "Number of loans: " + loans.length.to_s
         if (loans.length == 0)
             return false
         end
         if(!defined?(@sid) || @sid.length == 0)
             self.logIn(barcode,pin)
         end
-
         # login and renew loans in @currentloans
         loans.loans.each do |loan|
             days = loan.duedate - Date.today
-            puts "Days: "+days.to_s
+            #There is a problem with renewals - need to fix...
             if (loan.renewable == "Yes" && days.to_i < 1)
                 r = @soap_client.request('Renewal')
                 r.body do |b|
                     b.SessionId @sid
-                    b.Items.Item.Barcode = loan.id
+                    b.Items.Item.Barcode loan.id
                 end
+                puts "Renewal request: " + r.content
                 raw_response = @browser.post(r.url,r.content,r.headers)
                 resp = @soap_client.response(r,raw_response.body)
             end
