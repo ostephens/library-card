@@ -80,7 +80,8 @@ class Iguana < Librarysystem
     attr_accessor :csid, :sid, :browser, :soap_client
 
     def logIn(barcode,pin)
-        @soap_client = LolSoap::Client.new(@browser.get_file(url))
+        @soap_client = LolSoap::Client.new(@browser.get_file(soap_url))
+				@browser.get(url)
         @csid = @browser.cookies[0].value[12..21]
         language = 'eng'
         profile = 'Iguana'
@@ -123,7 +124,7 @@ class Iguana < Librarysystem
             "ValidRequests"=>valid_requests,
             "ViewId"=>view_id,
             "tempList"=>temp_list}
-        @browser.put("https://library.warwickshire.gov.uk/iguana/Proxy.SetLogon.cls",
+        @browser.put("https://library.warwickshire.gov.uk:443/iguana/Proxy.SetLogon.cls",
                     URI.encode_www_form(p),
                     "Content-Type"=>"application/x-www-form-urlencoded")
 
@@ -402,8 +403,10 @@ end
 class Warksiguana < Iguana
     def initialize()
         super(browser)
-        @url = "https://library.warwickshire.gov.uk/iguana/Proxy.UserActivities.cls?WSDL"
+        @url = "https://library.warwickshire.gov.uk/iguana/www.main.cls?surl=libraryaccount"
+				@soap_url = "https://library.warwickshire.gov.uk/iguana/Proxy.UserActivities.cls?WSDL"
     end
+		attr_reader :soap_url
 end
 
 class Chicago < Tlccarl
